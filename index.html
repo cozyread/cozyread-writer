@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>CozyRead Writer</title>
+
+    <!-- Memberstack -->
+    <script
+      data-memberstack-app="app_cmk47iqfg01n30st7gqch1391"
+      src="https://static.memberstack.com/scripts/v1/memberstack.js"
+      async
+    ></script>
+
+    <style>
+      * { box-sizing: border-box; }
+
+      html, body {
+        margin: 0;
+        height: 100%;
+        background: #1a1526;
+        font-family: Inter, system-ui, sans-serif;
+        color: #f4f1ff;
+      }
+
+      body { display: flex; }
+
+      /* Sidebar */
+      #sidebar {
+        width: 300px;
+        background: #1a1526;
+        border-right: 1px solid #2a2340;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      #sidebar h2 {
+        margin: 0 0 12px;
+        color: #c89b3c;
+      }
+
+      .chapter {
+        padding: 8px 10px;
+        border-radius: 8px;
+        margin-bottom: 6px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .chapter:hover { background: #2a2340; }
+      .chapter.active {
+        background: #c89b3c;
+        color: #1a1526;
+        font-weight: 700;
+      }
+
+      .chapter-controls button {
+        background: none;
+        border: none;
+        color: inherit;
+        cursor: pointer;
+        font-size: 12px;
+      }
+
+      #newChapter {
+        margin-top: 12px;
+        background: #c89b3c;
+        color: #1a1526;
+        border: none;
+        border-radius: 10px;
+        padding: 12px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      /* Main */
+      #main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 16px;
+      }
+
+      #topbar {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 6px;
+      }
+
+      #titleInput {
+        flex: 1;
+        background: #221c33;
+        border: 1px solid #2a2340;
+        color: #f4f1ff;
+        padding: 10px;
+        border-radius: 10px;
+        font-size: 18px;
+      }
+
+      button.primary {
+        background: #c89b3c;
+        color: #1a1526;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      button.secondary {
+        background: #2a2340;
+        color: #f4f1ff;
+      }
+
+      #meta {
+        display: flex;
+        gap: 14px;
+        font-size: 14px;
+        opacity: 0.85;
+        margin-bottom: 6px;
+      }
+
+      #toolbar {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+      }
+
+      #toolbar button {
+        background: #221c33;
+        border: 1px solid #2a2340;
+        color: #f4f1ff;
+        border-radius: 8px;
+        padding: 6px 10px;
+        cursor: pointer;
+      }
+
+      #toolbar button:hover {
+        background: #c89b3c;
+        color: #1a1526;
+      }
+
+      #editor {
+        flex: 1;
+        background: #221c33;
+        border: 1px solid #2a2340;
+        border-radius: 14px;
+        padding: 16px;
+        overflow-y: auto;
+        line-height: 1.7;
+      }
+
+      .focus #sidebar,
+      .focus #toolbar {
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="sidebar">
+      <h2>Chapters</h2>
+      <div id="chapterList"></div>
+      <button id="newChapter">＋ New Chapter</button>
+    </div>
+
+    <div id="main">
+      <div id="topbar">
+        <input id="titleInput" placeholder="Chapter title…" />
+        <button id="publish" class="primary">Publish</button>
+        <button id="delete" class="secondary">Delete</button>
+        <button id="focusToggle" class="secondary">Focus</button>
+        <span id="status"></span>
+      </div>
+
+      <div id="meta">
+        <span id="wordCount">0 words</span>
+        <span id="charCount">0 chars</span>
+        <span id="chapterStatus">Draft</span>
+        <span id="lastSaved"></span>
+      </div>
+
+      <div id="toolbar">
+        <button data-a="bold"><b>B</b></button>
+        <button data-a="italic"><i>I</i></button>
+        <button data-a="h1">H1</button>
+        <button data-a="h2">H2</button>
+        <button data-a="quote">❝</button>
+        <button data-a="ul">•</button>
+        <button data-a="ol">1.</button>
+        <button data-a="undo">↺</button>
+        <button data-a="redo">↻</button>
+      </div>
+
+      <div id="editor"></div>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
