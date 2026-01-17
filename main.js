@@ -2,37 +2,90 @@ import { createClient } from "@supabase/supabase-js";
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 
-/* ===== ENV ===== */
+/* ========= SUPABASE ========= */
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-/* ===== PARAMS ===== */
+/* ========= PARAMS ========= */
 const params = new URLSearchParams(window.location.search);
 const STORY_ID = params.get("story");
 
-/* ======================================================
-   IF NO STORY → CREATE STORY (NO MODES, NO GUARDS)
-====================================================== */
+const app = document.getElementById("app");
+
+/* =====================================================
+   CREATE STORY (DEFAULT WHEN NO STORY ID)
+===================================================== */
 if (!STORY_ID) {
-  document.getElementById("app").innerHTML = `
-    <div style="background:#1a1526;height:100vh;display:flex;align-items:center;justify-content:center">
-      <form id="createStory" style="background:#221c33;padding:28px;border-radius:18px;width:380px">
-        <h1 style="color:#c89b3c;text-align:center;margin-top:0">Create Story</h1>
-        <input id="title" placeholder="Story title"
-          style="width:100%;margin-bottom:12px;padding:12px;border-radius:12px;border:none;background:#1a1526;color:white"
-          required />
-        <textarea id="description" placeholder="Short description"
-          style="width:100%;margin-bottom:12px;padding:12px;border-radius:12px;border:none;background:#1a1526;color:white"></textarea>
-        <button style="width:100%;padding:14px;border-radius:12px;background:#c89b3c;border:none;font-weight:800;cursor:pointer">
+  // FULL SCREEN RESET
+  document.body.innerHTML = `
+    <div style="
+      background:#1a1526;
+      height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family:Inter,system-ui,sans-serif;
+      color:#f4f1ff;
+    ">
+      <form id="createStory" style="
+        background:#221c33;
+        padding:32px;
+        border-radius:20px;
+        width:380px;
+      ">
+        <h1 style="color:#c89b3c;text-align:center;margin-top:0">
+          Create Story
+        </h1>
+
+        <input id="title"
+          placeholder="Story title"
+          required
+          style="
+            width:100%;
+            margin-bottom:12px;
+            padding:12px;
+            border-radius:12px;
+            border:none;
+            background:#1a1526;
+            color:white;
+          "
+        />
+
+        <textarea id="description"
+          placeholder="Short description"
+          style="
+            width:100%;
+            margin-bottom:16px;
+            padding:12px;
+            border-radius:12px;
+            border:none;
+            background:#1a1526;
+            color:white;
+            resize:vertical;
+          "
+        ></textarea>
+
+        <button type="submit"
+          style="
+            width:100%;
+            padding:14px;
+            border-radius:12px;
+            background:#c89b3c;
+            border:none;
+            font-weight:800;
+            cursor:pointer;
+            color:#1a1526;
+          "
+        >
           Create & Write
         </button>
       </form>
     </div>
   `;
 
-  document.getElementById("createStory").onsubmit = async (e) => {
+  document.getElementById("createStory").addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const title = document.getElementById("title").value.trim();
@@ -46,66 +99,108 @@ if (!STORY_ID) {
 
     if (error) {
       alert("Failed to create story");
+      console.error(error);
       return;
     }
 
+    // 🔥 HARD REDIRECT (NO SPA SHENANIGANS)
     window.location.href = `/?story=${data.id}`;
-  };
+  });
 
-  // ⛔ STOP HERE — WRITER NEVER RUNS
-  throw new Error("Create mode");
+  // STOP EXECUTION COMPLETELY
+  return;
 }
 
-/* ======================================================
-   WRITER (ONLY RUNS WHEN STORY EXISTS)
-====================================================== */
+/* =====================================================
+   WRITER (ONLY RUNS WHEN STORY_ID EXISTS)
+===================================================== */
 
-document.getElementById("app").innerHTML = `
-  <div id="sidebar">
-    <h2>Chapters</h2>
+app.innerHTML = `
+  <div id="sidebar" style="
+    width:280px;
+    border-right:1px solid #2a2340;
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  ">
+    <h2 style="color:#c89b3c;margin:0 0 8px">Chapters</h2>
     <div id="chapterList"></div>
-    <button id="newChapter">+ New Chapter</button>
+    <button id="newChapter"
+      style="
+        margin-top:auto;
+        padding:12px;
+        border-radius:12px;
+        background:#c89b3c;
+        color:#1a1526;
+        border:none;
+        font-weight:800;
+        cursor:pointer;
+      "
+    >
+      + New Chapter
+    </button>
   </div>
 
-  <div id="main">
-    <div id="topbar">
-      <input id="titleInput" placeholder="Chapter title…" />
-      <button id="publish" class="primary">Publish</button>
-      <button id="delete" class="secondary">Delete</button>
-      <span id="saveStatus"></span>
+  <div id="main" style="
+    flex:1;
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  ">
+    <div id="topbar" style="display:flex;gap:8px;align-items:center">
+      <input id="titleInput"
+        placeholder="Chapter title…"
+        style="
+          flex:1;
+          padding:10px;
+          border-radius:12px;
+          border:1px solid #2a2340;
+          background:#221c33;
+          color:white;
+          font-size:18px;
+        "
+      />
+      <button id="publish" style="
+        background:#c89b3c;
+        color:#1a1526;
+        border:none;
+        border-radius:12px;
+        padding:10px 14px;
+        font-weight:800;
+        cursor:pointer;
+      ">Publish</button>
     </div>
 
-    <div id="meta">
+    <div id="meta" style="display:flex;gap:14px;font-size:13px;opacity:.85">
       <span id="wordCount">0 words</span>
       <span id="charCount">0 chars</span>
-      <span id="chapterStatus">Draft</span>
       <span id="lastSaved"></span>
     </div>
 
-    <div id="toolbar">
-      <button data-a="bold"><b>B</b></button>
-      <button data-a="italic"><i>I</i></button>
-      <button data-a="h1">H1</button>
-      <button data-a="h2">H2</button>
-      <button data-a="quote">❝</button>
-      <button data-a="ul">•</button>
-      <button data-a="ol">1.</button>
-      <button data-a="undo">↺</button>
-      <button data-a="redo">↻</button>
-    </div>
-
-    <div id="editor"></div>
+    <div id="editor"
+      style="
+        flex:1;
+        border:1px solid #2a2340;
+        border-radius:16px;
+        background:#221c33;
+        padding:18px;
+        overflow-y:auto;
+        line-height:1.8;
+      "
+    ></div>
   </div>
 `;
 
-/* ===== EDITOR ===== */
+/* ========= EDITOR ========= */
 const editor = new Editor({
   element: document.getElementById("editor"),
   extensions: [StarterKit],
   autofocus: true,
 });
 
-/* ===== CHAPTERS ===== */
+/* ========= CHAPTERS ========= */
 let currentChapterId = null;
 let saveTimer = null;
 
@@ -121,8 +216,11 @@ async function loadChapters() {
 
   data.forEach((c) => {
     const el = document.createElement("div");
-    el.className = "chapter";
     el.textContent = c.title || "Untitled Chapter";
+    el.style.padding = "10px";
+    el.style.borderRadius = "10px";
+    el.style.background = "#221c33";
+    el.style.cursor = "pointer";
     el.onclick = () => loadChapter(c.id);
     list.appendChild(el);
   });
@@ -146,7 +244,7 @@ document.getElementById("newChapter").onclick = async () => {
   loadChapters();
 };
 
-/* ===== AUTOSAVE ===== */
+/* ========= AUTOSAVE ========= */
 editor.on("update", () => {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(async () => {
@@ -155,8 +253,17 @@ editor.on("update", () => {
       title: document.getElementById("titleInput").value,
       content: editor.getHTML(),
     }).eq("id", currentChapterId);
+
+    document.getElementById("lastSaved").textContent =
+      "Saved " + new Date().toLocaleTimeString();
   }, 800);
+
+  const text = editor.getText();
+  document.getElementById("wordCount").textContent =
+    text.trim().split(/\s+/).filter(Boolean).length + " words";
+  document.getElementById("charCount").textContent =
+    text.length + " chars";
 });
 
-/* ===== INIT ===== */
+/* ========= INIT ========= */
 loadChapters();
