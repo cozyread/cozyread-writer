@@ -1,84 +1,39 @@
-const params = new URLSearchParams(window.location.search);
-const MODE = params.get("mode");
-const STORY_ID = params.get("story");
-
-
 import { createClient } from "@supabase/supabase-js";
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 
-/* =========================
-   ENV (REQUIRED FOR VITE)
-========================= */
+/* =====================
+   ENV (VITE REQUIRED)
+===================== */
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   document.body.innerHTML =
-    "<h1 style='color:white;padding:40px'>Supabase env vars missing</h1>";
+    "<h1 style='color:white;padding:40px'>Missing Supabase env vars</h1>";
   throw new Error("Missing Supabase env vars");
 }
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-// ===== ROUTING =====
+
+/* =====================
+   ROUTING
+===================== */
 const params = new URLSearchParams(window.location.search);
 const MODE = params.get("mode");
 const STORY_ID = params.get("story");
 
+/* =====================
+   CREATE STORY MODE
+===================== */
 if (MODE === "create") {
   document.body.innerHTML = `
     <div style="background:#1a1526;color:white;height:100vh;display:flex;align-items:center;justify-content:center">
-      <form id="createStory" style="background:#221c33;padding:24px;border-radius:16px;width:360px">
-        <h1 style="color:#c89b3c;text-align:center">Create Story</h1>
-        <input id="title" placeholder="Story title" style="width:100%;margin-bottom:12px;padding:10px;border-radius:10px;border:none" required />
-        <textarea id="description" placeholder="Short description" style="width:100%;margin-bottom:12px;padding:10px;border-radius:10px;border:none"></textarea>
-        <button style="width:100%;padding:12px;border-radius:10px;background:#c89b3c;border:none;font-weight:800;cursor:pointer">
-          Create & Write
-        </button>
-      </form>
-    </div>
-  `;
-
-  document.getElementById("createStory").onsubmit = async (e) => {
-    e.preventDefault();
-
-    const title = document.getElementById("title").value.trim();
-    const description = document.getElementById("description").value.trim();
-
-    const { data, error } = await supabase
-      .from("stories")
-      .insert({ title, description })
-      .select()
-      .single();
-
-    if (error) {
-      alert("Failed to create story");
-      console.error(error);
-      return;
-    }
-
-    window.location.href = `/?mode=write&story=${data.id}`;
-  };
-
-  // ⛔ STOP the rest of the file from running
-  return;
-}
-
-/* =========================
-   STORY CONTEXT
-========================= */
-const params = new URLSearchParams(window.location.search);
-const MODE = params.get("mode");
-const STORY_ID = params.get("story");
-
-if (MODE === "create") {
-  document.body.innerHTML = `
-    <div style="background:#1a1526;color:white;height:100vh;display:flex;align-items:center;justify-content:center">
-      <form id="createStory" style="background:#221c33;padding:24px;border-radius:16px;width:360px">
-        <h1 style="color:#c89b3c;text-align:center">Create Story</h1>
-        <input id="title" placeholder="Story title" style="width:100%;margin-bottom:12px;padding:10px;border-radius:10px;border:none" required />
-        <textarea id="description" placeholder="Short description" style="width:100%;margin-bottom:12px;padding:10px;border-radius:10px;border:none"></textarea>
-        <button style="width:100%;padding:12px;border-radius:10px;background:#c89b3c;border:none;font-weight:800;cursor:pointer">
+      <form id="createStory" style="background:#221c33;padding:28px;border-radius:18px;width:380px">
+        <h1 style="color:#c89b3c;text-align:center;margin-top:0">Create Story</h1>
+        <input id="title" placeholder="Story title" style="width:100%;margin-bottom:12px;padding:12px;border-radius:12px;border:none;background:#1a1526;color:white" required />
+        <textarea id="description" placeholder="Short description" style="width:100%;margin-bottom:12px;padding:12px;border-radius:12px;border:none;background:#1a1526;color:white"></textarea>
+        <button style="width:100%;padding:14px;border-radius:12px;background:#c89b3c;border:none;font-weight:800;cursor:pointer">
           Create & Write
         </button>
       </form>
@@ -109,32 +64,74 @@ if (MODE === "create") {
   return;
 }
 
+/* =====================
+   WRITE MODE GUARD
+===================== */
 if (!STORY_ID) {
   document.body.innerHTML =
     "<h1 style='color:white;padding:40px'>No story selected</h1>";
   throw new Error("Missing story ID");
 }
 
+/* =====================
+   APP LAYOUT
+===================== */
+document.getElementById("app").innerHTML = `
+  <div id="sidebar">
+    <h2>Chapters</h2>
+    <div id="chapterList"></div>
+    <button id="newChapter">+ New Chapter</button>
+  </div>
 
-/* =========================
+  <div id="main">
+    <div id="topbar">
+      <input id="titleInput" placeholder="Chapter title…" />
+      <button id="publish" class="primary">Publish</button>
+      <button id="delete" class="secondary">Delete</button>
+      <span id="saveStatus"></span>
+    </div>
+
+    <div id="meta">
+      <span id="wordCount">0 words</span>
+      <span id="charCount">0 chars</span>
+      <span id="chapterStatus">Draft</span>
+      <span id="lastSaved"></span>
+    </div>
+
+    <div id="toolbar">
+      <button data-a="bold"><b>B</b></button>
+      <button data-a="italic"><i>I</i></button>
+      <button data-a="h1">H1</button>
+      <button data-a="h2">H2</button>
+      <button data-a="quote">❝</button>
+      <button data-a="ul">•</button>
+      <button data-a="ol">1.</button>
+      <button data-a="undo">↺</button>
+      <button data-a="redo">↻</button>
+    </div>
+
+    <div id="editor"></div>
+  </div>
+`;
+
+/* =====================
    STATE
-========================= */
+===================== */
 let currentChapterId = null;
 let saveTimer = null;
-let dirty = false;
 
-/* =========================
+/* =====================
    EDITOR
-========================= */
+===================== */
 const editor = new Editor({
   element: document.getElementById("editor"),
   extensions: [StarterKit],
   autofocus: true,
 });
 
-/* =========================
+/* =====================
    TOOLBAR
-========================= */
+===================== */
 document.getElementById("toolbar").onclick = (e) => {
   const a = e.target.closest("button")?.dataset.a;
   if (!a) return;
@@ -151,9 +148,9 @@ document.getElementById("toolbar").onclick = (e) => {
   if (a === "redo") editor.redo();
 };
 
-/* =========================
+/* =====================
    LOAD CHAPTERS
-========================= */
+===================== */
 async function loadChapters() {
   const { data } = await supabase
     .from("chapters")
@@ -181,10 +178,9 @@ async function loadChapters() {
 async function loadChapter(id) {
   currentChapterId = id;
 
-  document
-    .querySelectorAll(".chapter")
-    .forEach((c) => c.classList.remove("active"));
-  document.querySelector(`[data-id="${id}"]`)?.classList.add("active");
+  document.querySelectorAll(".chapter").forEach((c) =>
+    c.classList.toggle("active", c.dataset.id === id)
+  );
 
   const { data } = await supabase
     .from("chapters")
@@ -197,13 +193,12 @@ async function loadChapter(id) {
     data.status === "published" ? "Published" : "Draft";
 
   editor.commands.setContent(data.content || "<p></p>");
-  dirty = false;
   updateCounts();
 }
 
-/* =========================
+/* =====================
    NEW CHAPTER
-========================= */
+===================== */
 document.getElementById("newChapter").onclick = async () => {
   await supabase.from("chapters").insert({
     story_id: STORY_ID,
@@ -215,56 +210,61 @@ document.getElementById("newChapter").onclick = async () => {
   loadChapters();
 };
 
-/* =========================
-   SAVE LOGIC
-========================= */
+/* =====================
+   AUTOSAVE
+===================== */
 async function save() {
   if (!currentChapterId) return;
 
-  await supabase.from("chapters").update({
-    title: document.getElementById("titleInput").value,
-    content: editor.getHTML(),
-  }).eq("id", currentChapterId);
+  await supabase
+    .from("chapters")
+    .update({
+      title: document.getElementById("titleInput").value,
+      content: editor.getHTML(),
+    })
+    .eq("id", currentChapterId);
 
-  dirty = false;
   document.getElementById("saveStatus").textContent = "Saved";
   document.getElementById("lastSaved").textContent =
     "Saved " + new Date().toLocaleTimeString();
 }
 
 editor.on("update", () => {
-  dirty = true;
-  updateCounts();
   document.getElementById("saveStatus").textContent = "Saving…";
+  updateCounts();
   clearTimeout(saveTimer);
   saveTimer = setTimeout(save, 800);
 });
 
 document.getElementById("titleInput").oninput = () => {
-  dirty = true;
   clearTimeout(saveTimer);
   saveTimer = setTimeout(save, 800);
 };
 
-/* =========================
+/* =====================
    PUBLISH / DELETE
-========================= */
+===================== */
 document.getElementById("publish").onclick = async () => {
-  await supabase.from("chapters").update({ status: "published" }).eq("id", currentChapterId);
+  await supabase
+    .from("chapters")
+    .update({ status: "published" })
+    .eq("id", currentChapterId);
+
   document.getElementById("chapterStatus").textContent = "Published";
 };
 
 document.getElementById("delete").onclick = async () => {
   if (!confirm("Delete chapter?")) return;
+
   await supabase.from("chapters").delete().eq("id", currentChapterId);
   currentChapterId = null;
   editor.commands.setContent("<p></p>");
   loadChapters();
 };
 
-/* =========================
+/* =====================
    COUNTS
-========================= */
+===================== */
 function updateCounts() {
   const text = editor.getText();
   document.getElementById("wordCount").textContent =
@@ -272,7 +272,7 @@ function updateCounts() {
   document.getElementById("charCount").textContent = text.length + " chars";
 }
 
-/* =========================
+/* =====================
    INIT
-========================= */
+===================== */
 loadChapters();
