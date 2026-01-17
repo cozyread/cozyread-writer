@@ -1,31 +1,3 @@
-/* ================= CREATE STORY PAGE ================= */
-const createForm = document.getElementById("createStoryForm");
-
-if (createForm) {
-  createForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const title = document.getElementById("title").value.trim();
-    const description = document.getElementById("description").value.trim();
-
-    const { data, error } = await supabase
-      .from("stories")
-      .insert({ title, description })
-      .select()
-      .single();
-
-    if (error) {
-      alert(error.message);
-      console.error(error);
-      return;
-    }
-
-    // 🔥 HARD REDIRECT — NO SPA, NO HISTORY ISSUES
-    window.location.href = `index.html?story=${data.id}`;
-  });
-}
-
-
 import { createClient } from "@supabase/supabase-js";
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
@@ -39,8 +11,8 @@ const supabase = createClient(
 /* ================= STORY ================= */
 const storyId = new URLSearchParams(window.location.search).get("story");
 if (!storyId) {
-  alert("Open writer with ?story=STORY_ID");
-  throw new Error("Missing story ID");
+  alert("Open the writer using ?story=STORY_ID");
+  throw new Error("Missing story id");
 }
 
 /* ================= STATE ================= */
@@ -55,25 +27,56 @@ const editor = new Editor({
   content: "<p></p>",
 });
 
-/* ================= TOOLBAR ================= */
+/* ================= TOOLBAR (FIXED) ================= */
 document.getElementById("toolbar").addEventListener("click", (e) => {
-  const action = e.target.closest("button")?.dataset.action;
+  const button = e.target.closest("button");
+  if (!button) return;
+
+  const action = button.dataset.action;
   if (!action) return;
 
-  editor.chain().focus();
+  editor.commands.focus();
 
-  if (action === "bold") editor.toggleBold().run();
-  if (action === "italic") editor.toggleItalic().run();
-  if (action === "h1") editor.toggleHeading({ level: 1 }).run();
-  if (action === "h2") editor.toggleHeading({ level: 2 }).run();
-  if (action === "ul") editor.toggleBulletList().run();
-  if (action === "ol") editor.toggleOrderedList().run();
-  if (action === "quote") editor.toggleBlockquote().run();
-  if (action === "undo") editor.undo();
-  if (action === "redo") editor.redo();
+  switch (action) {
+    case "bold":
+      editor.commands.toggleBold();
+      break;
+
+    case "italic":
+      editor.commands.toggleItalic();
+      break;
+
+    case "h1":
+      editor.commands.toggleHeading({ level: 1 });
+      break;
+
+    case "h2":
+      editor.commands.toggleHeading({ level: 2 });
+      break;
+
+    case "ul":
+      editor.commands.toggleBulletList();
+      break;
+
+    case "ol":
+      editor.commands.toggleOrderedList();
+      break;
+
+    case "quote":
+      editor.commands.toggleBlockquote();
+      break;
+
+    case "undo":
+      editor.commands.undo();
+      break;
+
+    case "redo":
+      editor.commands.redo();
+      break;
+  }
 });
 
-/* ================= COUNTS ================= */
+/* ================= COUNTERS ================= */
 function updateCounts() {
   const text = editor.getText();
   document.getElementById("words").textContent =
@@ -82,14 +85,17 @@ function updateCounts() {
     text.length + " chars";
 }
 
-/* ================= SAVE ================= */
+/* ================= AUTOSAVE ================= */
 async function saveChapter() {
   if (!currentChapterId) return;
 
-  await supabase.from("chapters").update({
-    title: document.getElementById("title").value || "Untitled Chapter",
-    content: editor.getHTML(),
-  }).eq("id", currentChapterId);
+  await supabase
+    .from("chapters")
+    .update({
+      title: document.getElementById("title").value || "Untitled Chapter",
+      content: editor.getHTML(),
+    })
+    .eq("id", currentChapterId);
 
   document.getElementById("status").textContent =
     "Saved " + new Date().toLocaleTimeString();
@@ -186,7 +192,11 @@ document.getElementById("delete").onclick = async () => {
   if (!currentChapterId) return;
   if (!confirm("Delete this chapter?")) return;
 
-  await supabase.from("chapters").delete().eq("id", currentChapterId);
+  await supabase
+    .from("chapters")
+    .delete()
+    .eq("id", currentChapterId);
+
   currentChapterId = null;
   editor.commands.setContent("<p></p>");
   loadChapters();
