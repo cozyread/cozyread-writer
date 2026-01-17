@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Create Story</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+      body {
+        background: #1a1526;
+        color: #f4f1ff;
+        font-family: Inter, system-ui, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      form {
+        background: #221c33;
+        padding: 24px;
+        border-radius: 16px;
+        width: 360px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      }
+
+      h1 {
+        margin-top: 0;
+        margin-bottom: 16px;
+        color: #c89b3c;
+        text-align: center;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        margin-bottom: 12px;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid #2a2340;
+        background: #1a1526;
+        color: #fff;
+        font-size: 14px;
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+
+      button {
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        border: none;
+        background: #c89b3c;
+        color: #1a1526;
+        font-weight: 800;
+        font-size: 15px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        opacity: 0.9;
+      }
+    </style>
+  </head>
+
+  <body>
+    <form id="form">
+      <h1>Create Story</h1>
+      <input id="title" placeholder="Story title" required />
+      <textarea id="description" placeholder="Short description (optional)"></textarea>
+      <button type="submit">Create & Write</button>
+    </form>
+
+    <script type="module" src="/create-story.js"></script>
+  </body>
+</html>
