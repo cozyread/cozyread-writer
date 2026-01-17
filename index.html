@@ -17,6 +17,7 @@
       display: flex;
     }
 
+    /* SIDEBAR */
     #sidebar {
       width: 260px;
       border-right: 1px solid #2a2340;
@@ -50,6 +51,7 @@
       font-weight: 700;
     }
 
+    /* MAIN */
     #main {
       flex: 1;
       padding: 16px;
@@ -89,6 +91,7 @@
       opacity: 0.85;
     }
 
+    /* TOOLBAR */
     #toolbar {
       display: flex;
       gap: 6px;
@@ -122,15 +125,21 @@
       line-height: 1.8;
       overflow-y: auto;
     }
+
+    #editor p {
+      margin: 0 0 1em;
+    }
   </style>
 </head>
 
 <body>
+  <!-- SIDEBAR -->
   <div id="sidebar">
     <button id="newChapter">+ New Chapter</button>
     <div id="chapterList"></div>
   </div>
 
+  <!-- MAIN -->
   <div id="main">
     <div id="topbar">
       <input id="title" placeholder="Chapter title" />
