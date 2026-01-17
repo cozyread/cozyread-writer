@@ -18,44 +18,63 @@
       border-right: 1px solid #2a2340;
       padding: 16px;
     }
+    #chapter {
+      padding: 8px;
+      background: #221c33;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      cursor: pointer;
+    }
     #main {
       flex: 1;
       padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+    input {
+      background: #221c33;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 8px;
     }
     button {
       background: #c89b3c;
       border: none;
-      border-radius: 10px;
-      padding: 10px;
+      border-radius: 8px;
+      padding: 8px 12px;
       font-weight: 700;
       cursor: pointer;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 10px;
-      border: none;
-      background: #221c33;
-      color: white;
+      margin-right: 6px;
     }
     #editor {
-      margin-top: 12px;
-      padding: 16px;
+      flex: 1;
       background: #221c33;
       border-radius: 12px;
-      min-height: 300px;
+      padding: 16px;
+      margin-top: 8px;
     }
   </style>
 </head>
 <body>
   <div id="sidebar">
-    <button onclick="location.href='create-story.html'">+ New Story</button>
-    <div id="chapters"></div>
+    <button id="newChapter">+ Chapter</button>
+    <div id="chapterList"></div>
   </div>
+
   <div id="main">
     <input id="title" placeholder="Chapter title" />
-    <div id="editor" contenteditable="true"></div>
+    <div>
+      <button id="publish">Publish</button>
+      <button id="delete">Delete</button>
+      <span id="status"></span>
+    </div>
+    <div id="meta">
+      <span id="words">0 words</span> ·
+      <span id="chars">0 chars</span>
+    </div>
+    <div id="editor"></div>
   </div>
 
   <script type="module" src="main.js"></script>
