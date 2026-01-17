@@ -55,6 +55,47 @@
     <button type="submit">Create & Write</button>
   </form>
 
- <script type="module" src="create-story.js"></script>
+  <!-- Supabase CDN (NO BUILD REQUIRED) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    // 🔴 REPLACE THESE WITH YOUR REAL VALUES
+    const SUPABASE_URL = "https://YOUR_PROJECT_ID.supabase.co";
+    const SUPABASE_ANON_KEY = "YOUR_PUBLIC_ANON_KEY";
+
+    const supabase = supabaseJs.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+    const form = document.getElementById("createStoryForm");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const title = document.getElementById("title").value.trim();
+      const description = document.getElementById("description").value.trim();
+
+      if (!title) {
+        alert("Story title is required");
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("stories")
+        .insert({ title, description })
+        .select()
+        .single();
+
+      if (error) {
+        console.error(error);
+        alert(error.message);
+        return;
+      }
+
+      // ✅ THIS REDIRECT CANNOT FAIL
+      window.location.href = `/index.html?story=${data.id}`;
+    });
+  </script>
 </body>
 </html>
