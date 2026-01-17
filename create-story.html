@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Create Story</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <style>
     body {
       margin: 0;
@@ -15,40 +16,47 @@
       align-items: center;
       justify-content: center;
     }
+
     form {
       background: #221c33;
-      padding: 30px;
+      padding: 32px;
       border-radius: 20px;
       width: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
+
     input, textarea {
-      width: 100%;
       padding: 12px;
-      margin-bottom: 12px;
       border-radius: 10px;
       border: none;
       background: #1a1526;
       color: white;
+      font-size: 14px;
     }
+
     button {
-      width: 100%;
       padding: 14px;
+      border-radius: 12px;
       background: #c89b3c;
       border: none;
-      border-radius: 12px;
       font-weight: 800;
       cursor: pointer;
+      color: #1a1526;
     }
   </style>
 </head>
+
 <body>
-  <form id="form">
-    <h1>Create Story</h1>
+  <form id="createStoryForm">
+    <h1 style="margin:0;color:#c89b3c;text-align:center">Create Story</h1>
     <input id="title" placeholder="Story title" required />
-    <textarea id="description" placeholder="Description"></textarea>
-    <button>Create</button>
+    <textarea id="description" placeholder="Description (optional)"></textarea>
+    <button type="submit">Create & Write</button>
   </form>
 
+  <!-- IMPORTANT: main.js MUST be loaded -->
   <script type="module" src="main.js"></script>
 </body>
 </html>
