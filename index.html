@@ -17,24 +17,23 @@
       display: flex;
     }
 
-    /* SIDEBAR */
     #sidebar {
       width: 260px;
       border-right: 1px solid #2a2340;
       padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
 
     #newChapter {
       background: #c89b3c;
+      color: #1a1526;
       border: none;
       border-radius: 10px;
       padding: 10px;
       font-weight: 700;
       cursor: pointer;
-      color: #1a1526;
     }
 
     .chapter {
@@ -42,7 +41,6 @@
       background: #221c33;
       border-radius: 8px;
       cursor: pointer;
-      font-size: 14px;
     }
 
     .chapter.active {
@@ -51,13 +49,12 @@
       font-weight: 700;
     }
 
-    /* MAIN */
     #main {
       flex: 1;
       padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
     }
 
     #topbar {
@@ -78,12 +75,12 @@
 
     button.action {
       background: #c89b3c;
+      color: #1a1526;
       border: none;
       border-radius: 10px;
       padding: 8px 12px;
       font-weight: 700;
       cursor: pointer;
-      color: #1a1526;
     }
 
     #status {
@@ -91,7 +88,6 @@
       opacity: 0.85;
     }
 
-    /* TOOLBAR */
     #toolbar {
       display: flex;
       gap: 6px;
@@ -107,16 +103,6 @@
       cursor: pointer;
     }
 
-    #toolbar button:hover {
-      background: #c89b3c;
-      color: #1a1526;
-    }
-
-    #meta {
-      font-size: 13px;
-      opacity: 0.85;
-    }
-
     #editor {
       flex: 1;
       background: #221c33;
@@ -124,10 +110,6 @@
       padding: 16px;
       line-height: 1.8;
       overflow-y: auto;
-    }
-
-    #editor p {
-      margin: 0 0 1em;
     }
   </style>
 </head>
@@ -147,15 +129,15 @@
     </div>
 
     <div id="toolbar">
-      <button data-a="bold"><b>B</b></button>
-      <button data-a="italic"><i>I</i></button>
-      <button data-a="h1">H1</button>
-      <button data-a="h2">H2</button>
-      <button data-a="ul">•</button>
-      <button data-a="ol">1.</button>
-      <button data-a="quote">❝</button>
-      <button data-a="undo">↺</button>
-      <button data-a="redo">↻</button>
+      <button data-action="bold"><b>B</b></button>
+      <button data-action="italic"><i>I</i></button>
+      <button data-action="h1">H1</button>
+      <button data-action="h2">H2</button>
+      <button data-action="ul">•</button>
+      <button data-action="ol">1.</button>
+      <button data-action="quote">❝</button>
+      <button data-action="undo">↺</button>
+      <button data-action="redo">↻</button>
     </div>
 
     <div id="meta">
