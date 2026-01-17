@@ -1,3 +1,31 @@
+/* ================= CREATE STORY PAGE ================= */
+const createForm = document.getElementById("createStoryForm");
+
+if (createForm) {
+  createForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const title = document.getElementById("title").value.trim();
+    const description = document.getElementById("description").value.trim();
+
+    const { data, error } = await supabase
+      .from("stories")
+      .insert({ title, description })
+      .select()
+      .single();
+
+    if (error) {
+      alert(error.message);
+      console.error(error);
+      return;
+    }
+
+    // 🔥 HARD REDIRECT — NO SPA, NO HISTORY ISSUES
+    window.location.href = `index.html?story=${data.id}`;
+  });
+}
+
+
 import { createClient } from "@supabase/supabase-js";
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
