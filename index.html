@@ -14,9 +14,14 @@
         color: #f4f1ff;
         font-family: Inter, system-ui, sans-serif;
         height: 100vh;
+      }
+
+      #app {
+        height: 100vh;
         display: flex;
       }
 
+      /* SIDEBAR */
       #sidebar {
         width: 280px;
         border-right: 1px solid #2a2340;
@@ -36,7 +41,6 @@
         border-radius: 10px;
         background: #221c33;
         cursor: pointer;
-        font-size: 14px;
       }
 
       .chapter.active {
@@ -56,6 +60,7 @@
         cursor: pointer;
       }
 
+      /* MAIN */
       #main {
         flex: 1;
         padding: 16px;
@@ -134,10 +139,6 @@
         padding: 18px;
         overflow-y: auto;
         line-height: 1.8;
-      }
-
-      #editor p {
-        margin: 0 0 1em;
       }
     </style>
   </head>
