@@ -2,34 +2,26 @@ import { createClient } from "@supabase/supabase-js";
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 
-/* ======================
-   SUPABASE
-====================== */
+/* ================= SUPABASE ================= */
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
   import.meta.env.VITE_SUPABASE_ANON_KEY
 );
 
-/* ======================
-   STORY ID
-====================== */
+/* ================= STORY ================= */
 const params = new URLSearchParams(window.location.search);
 const STORY_ID = params.get("story");
 
 if (!STORY_ID) {
-  console.warn("No story id — writer disabled");
-  return;
+  alert("Open writer with ?story=STORY_ID");
+  throw new Error("No story id");
 }
 
-/* ======================
-   STATE
-====================== */
+/* ================= STATE ================= */
 let currentChapterId = null;
 let saveTimer = null;
 
-/* ======================
-   TIPTAP EDITOR
-====================== */
+/* ================= EDITOR ================= */
 const editor = new Editor({
   element: document.getElementById("editor"),
   extensions: [StarterKit],
@@ -37,9 +29,24 @@ const editor = new Editor({
   content: "<p></p>",
 });
 
-/* ======================
-   WORD / CHAR COUNT
-====================== */
+/* ================= TOOLBAR ================= */
+document.getElementById("toolbar").onclick = (e) => {
+  const action = e.target.closest("button")?.dataset.a;
+  if (!action) return;
+
+  editor.chain().focus();
+  if (action === "bold") editor.toggleBold().run();
+  if (action === "italic") editor.toggleItalic().run();
+  if (action === "h1") editor.toggleHeading({ level: 1 }).run();
+  if (action === "h2") editor.toggleHeading({ level: 2 }).run();
+  if (action === "ul") editor.toggleBulletList().run();
+  if (action === "ol") editor.toggleOrderedList().run();
+  if (action === "quote") editor.toggleBlockquote().run();
+  if (action === "undo") editor.undo();
+  if (action === "redo") editor.redo();
+};
+
+/* ================= COUNTS ================= */
 function updateCounts() {
   const text = editor.getText();
   document.getElementById("words").textContent =
@@ -48,19 +55,14 @@ function updateCounts() {
     text.length + " chars";
 }
 
-/* ======================
-   AUTOSAVE
-====================== */
+/* ================= SAVE ================= */
 async function saveChapter() {
   if (!currentChapterId) return;
 
-  await supabase
-    .from("chapters")
-    .update({
-      title: document.getElementById("title").value || "Untitled Chapter",
-      content: editor.getHTML(),
-    })
-    .eq("id", currentChapterId);
+  await supabase.from("chapters").update({
+    title: document.getElementById("title").value || "Untitled Chapter",
+    content: editor.getHTML(),
+  }).eq("id", currentChapterId);
 
   document.getElementById("status").textContent =
     "Saved " + new Date().toLocaleTimeString();
@@ -73,14 +75,12 @@ editor.on("update", () => {
   saveTimer = setTimeout(saveChapter, 800);
 });
 
-document.getElementById("title").addEventListener("input", () => {
+document.getElementById("title").oninput = () => {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(saveChapter, 800);
-});
+};
 
-/* ======================
-   LOAD CHAPTERS
-====================== */
+/* ================= CHAPTERS ================= */
 async function loadChapters() {
   const { data } = await supabase
     .from("chapters")
@@ -92,21 +92,19 @@ async function loadChapters() {
   list.innerHTML = "";
 
   if (!data.length) {
-    createChapter();
+    await createChapter();
     return;
   }
 
-  data.forEach((chapter) => {
+  data.forEach((ch) => {
     const el = document.createElement("div");
-    el.id = "chapter";
-    el.textContent = chapter.title;
-    el.onclick = () => loadChapter(chapter.id);
+    el.className = "chapter" + (ch.id === currentChapterId ? " active" : "");
+    el.textContent = ch.title;
+    el.onclick = () => loadChapter(ch.id);
     list.appendChild(el);
   });
 
-  if (!currentChapterId) {
-    loadChapter(data[0].id);
-  }
+  if (!currentChapterId) loadChapter(data[0].id);
 }
 
 async function loadChapter(id) {
@@ -120,26 +118,20 @@ async function loadChapter(id) {
 
   document.getElementById("title").value = data.title;
   editor.commands.setContent(data.content || "<p></p>");
+  updateCounts();
   document.getElementById("status").textContent =
     data.status === "published" ? "Published" : "Draft";
 
-  updateCounts();
+  loadChapters();
 }
 
-/* ======================
-   CREATE CHAPTER
-====================== */
 async function createChapter() {
-  const { data } = await supabase
-    .from("chapters")
-    .insert({
-      story_id: STORY_ID,
-      title: "Untitled Chapter",
-      content: "<p></p>",
-      status: "draft",
-    })
-    .select()
-    .single();
+  const { data } = await supabase.from("chapters").insert({
+    story_id: STORY_ID,
+    title: "Untitled Chapter",
+    content: "<p></p>",
+    status: "draft",
+  }).select().single();
 
   currentChapterId = data.id;
   loadChapters();
@@ -147,23 +139,18 @@ async function createChapter() {
 
 document.getElementById("newChapter").onclick = createChapter;
 
-/* ======================
-   PUBLISH
-====================== */
+/* ================= PUBLISH ================= */
 document.getElementById("publish").onclick = async () => {
   if (!currentChapterId) return;
 
-  await supabase
-    .from("chapters")
+  await supabase.from("chapters")
     .update({ status: "published" })
     .eq("id", currentChapterId);
 
   document.getElementById("status").textContent = "Published";
 };
 
-/* ======================
-   DELETE
-====================== */
+/* ================= DELETE ================= */
 document.getElementById("delete").onclick = async () => {
   if (!currentChapterId) return;
   if (!confirm("Delete this chapter?")) return;
@@ -174,7 +161,5 @@ document.getElementById("delete").onclick = async () => {
   loadChapters();
 };
 
-/* ======================
-   INIT
-====================== */
+/* ================= INIT ================= */
 loadChapters();
