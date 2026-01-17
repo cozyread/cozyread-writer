@@ -1,33 +1,47 @@
 import { createClient } from "@supabase/supabase-js";
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+/* ================= SUPABASE ================= */
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+/* ================= FORM ================= */
+const form = document.getElementById("createStoryForm");
 
-const form = document.getElementById("form");
+if (!form) {
+  console.error("Create Story form not found");
+} else {
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+    const titleInput = document.getElementById("title");
+    const descInput = document.getElementById("description");
 
-  const title = document.getElementById("title").value.trim();
-  const description = document.getElementById("description").value.trim();
+    const title = titleInput.value.trim();
+    const description = descInput.value.trim();
 
-  const { data, error } = await supabase
-    .from("stories")
-    .insert({
-      title,
-      description,
-    })
-    .select()
-    .single();
+    if (!title) {
+      alert("Story title is required");
+      return;
+    }
 
-  if (error) {
-    alert("Failed to create story");
-    console.error(error);
-    return;
-  }
+    const { data, error } = await supabase
+      .from("stories")
+      .insert({
+        title,
+        description,
+      })
+      .select()
+      .single();
 
-  // Redirect to writer with the new story ID
-  window.location.href = `/?story=${data.id}`;
-});
+    if (error) {
+      console.error(error);
+      alert(error.message);
+      return;
+    }
+
+    // ✅ HARD REDIRECT TO WRITER
+    window.location.href = `index.html?story=${data.id}`;
+  });
+}
