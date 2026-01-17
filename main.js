@@ -1,3 +1,6 @@
+alert("MODE=" + new URLSearchParams(window.location.search).get("mode"));
+
+
 import { createClient } from "@supabase/supabase-js";
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
