@@ -20,6 +20,49 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
 }
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// ===== ROUTING =====
+const params = new URLSearchParams(window.location.search);
+const MODE = params.get("mode");
+const STORY_ID = params.get("story");
+
+if (MODE === "create") {
+  document.body.innerHTML = `
+    <div style="background:#1a1526;color:white;height:100vh;display:flex;align-items:center;justify-content:center">
+      <form id="createStory" style="background:#221c33;padding:24px;border-radius:16px;width:360px">
+        <h1 style="color:#c89b3c;text-align:center">Create Story</h1>
+        <input id="title" placeholder="Story title" style="width:100%;margin-bottom:12px;padding:10px;border-radius:10px;border:none" required />
+        <textarea id="description" placeholder="Short description" style="width:100%;margin-bottom:12px;padding:10px;border-radius:10px;border:none"></textarea>
+        <button style="width:100%;padding:12px;border-radius:10px;background:#c89b3c;border:none;font-weight:800;cursor:pointer">
+          Create & Write
+        </button>
+      </form>
+    </div>
+  `;
+
+  document.getElementById("createStory").onsubmit = async (e) => {
+    e.preventDefault();
+
+    const title = document.getElementById("title").value.trim();
+    const description = document.getElementById("description").value.trim();
+
+    const { data, error } = await supabase
+      .from("stories")
+      .insert({ title, description })
+      .select()
+      .single();
+
+    if (error) {
+      alert("Failed to create story");
+      console.error(error);
+      return;
+    }
+
+    window.location.href = `/?mode=write&story=${data.id}`;
+  };
+
+  // ⛔ STOP the rest of the file from running
+  return;
+}
 
 /* =========================
    STORY CONTEXT
