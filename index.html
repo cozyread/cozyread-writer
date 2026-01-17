@@ -23,7 +23,7 @@
         padding: 16px;
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 10px;
       }
 
       #sidebar h2 {
@@ -33,9 +33,10 @@
 
       .chapter {
         padding: 10px;
-        border-radius: 8px;
+        border-radius: 10px;
         background: #221c33;
         cursor: pointer;
+        font-size: 14px;
       }
 
       .chapter.active {
@@ -47,7 +48,7 @@
       #newChapter {
         margin-top: auto;
         padding: 12px;
-        border-radius: 10px;
+        border-radius: 12px;
         background: #c89b3c;
         color: #1a1526;
         border: none;
@@ -60,19 +61,19 @@
         padding: 16px;
         display: flex;
         flex-direction: column;
+        gap: 8px;
       }
 
       #topbar {
         display: flex;
         gap: 8px;
         align-items: center;
-        margin-bottom: 8px;
       }
 
       #titleInput {
         flex: 1;
         padding: 10px;
-        border-radius: 10px;
+        border-radius: 12px;
         border: 1px solid #2a2340;
         background: #221c33;
         color: #fff;
@@ -83,7 +84,7 @@
         background: #c89b3c;
         color: #1a1526;
         border: none;
-        border-radius: 10px;
+        border-radius: 12px;
         padding: 10px 14px;
         font-weight: 800;
         cursor: pointer;
@@ -93,7 +94,7 @@
         background: #2a2340;
         color: #fff;
         border: none;
-        border-radius: 10px;
+        border-radius: 12px;
         padding: 10px 14px;
         cursor: pointer;
       }
@@ -101,16 +102,14 @@
       #meta {
         display: flex;
         gap: 14px;
-        font-size: 14px;
+        font-size: 13px;
         opacity: 0.85;
-        margin-bottom: 8px;
       }
 
       #toolbar {
         display: flex;
         gap: 6px;
         flex-wrap: wrap;
-        margin-bottom: 8px;
       }
 
       #toolbar button {
@@ -130,52 +129,21 @@
       #editor {
         flex: 1;
         border: 1px solid #2a2340;
-        border-radius: 14px;
+        border-radius: 16px;
         background: #221c33;
-        padding: 16px;
+        padding: 18px;
         overflow-y: auto;
-        line-height: 1.7;
+        line-height: 1.8;
+      }
+
+      #editor p {
+        margin: 0 0 1em;
       }
     </style>
   </head>
 
   <body>
-    <div id="sidebar">
-      <h2>Chapters</h2>
-      <div id="chapterList"></div>
-      <button id="newChapter">+ New Chapter</button>
-    </div>
-
-    <div id="main">
-      <div id="topbar">
-        <input id="titleInput" placeholder="Chapter title…" />
-        <button id="publish" class="primary">Publish</button>
-        <button id="delete" class="secondary">Delete</button>
-        <span id="saveStatus"></span>
-      </div>
-
-      <div id="meta">
-        <span id="wordCount">0 words</span>
-        <span id="charCount">0 chars</span>
-        <span id="chapterStatus">Draft</span>
-        <span id="lastSaved"></span>
-      </div>
-
-      <div id="toolbar">
-        <button data-a="bold"><b>B</b></button>
-        <button data-a="italic"><i>I</i></button>
-        <button data-a="h1">H1</button>
-        <button data-a="h2">H2</button>
-        <button data-a="quote">❝</button>
-        <button data-a="ul">•</button>
-        <button data-a="ol">1.</button>
-        <button data-a="undo">↺</button>
-        <button data-a="redo">↻</button>
-      </div>
-
-      <div id="editor"></div>
-    </div>
-
+    <div id="app"></div>
     <script type="module" src="/main.js"></script>
   </body>
 </html>
