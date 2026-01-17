@@ -1,150 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>CozyRead Writer</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+  <meta charset="UTF-8" />
+  <title>CozyRead Writer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      background: #1a1526;
+      color: #f4f1ff;
+      font-family: system-ui, sans-serif;
+      height: 100vh;
+      display: flex;
+    }
+    #sidebar {
+      width: 260px;
+      border-right: 1px solid #2a2340;
+      padding: 16px;
+    }
+    #main {
+      flex: 1;
+      padding: 16px;
+    }
+    button {
+      background: #c89b3c;
+      border: none;
+      border-radius: 10px;
+      padding: 10px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      border: none;
+      background: #221c33;
+      color: white;
+    }
+    #editor {
+      margin-top: 12px;
+      padding: 16px;
+      background: #221c33;
+      border-radius: 12px;
+      min-height: 300px;
+    }
+  </style>
+</head>
+<body>
+  <div id="sidebar">
+    <button onclick="location.href='create-story.html'">+ New Story</button>
+    <div id="chapters"></div>
+  </div>
+  <div id="main">
+    <input id="title" placeholder="Chapter title" />
+    <div id="editor" contenteditable="true"></div>
+  </div>
 
-    <style>
-      * { box-sizing: border-box; }
-
-      body {
-        margin: 0;
-        background: #1a1526;
-        color: #f4f1ff;
-        font-family: Inter, system-ui, sans-serif;
-        height: 100vh;
-      }
-
-      #app {
-        height: 100vh;
-        display: flex;
-      }
-
-      /* SIDEBAR */
-      #sidebar {
-        width: 280px;
-        border-right: 1px solid #2a2340;
-        padding: 16px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      #sidebar h2 {
-        color: #c89b3c;
-        margin: 0 0 8px;
-      }
-
-      .chapter {
-        padding: 10px;
-        border-radius: 10px;
-        background: #221c33;
-        cursor: pointer;
-      }
-
-      .chapter.active {
-        background: #c89b3c;
-        color: #1a1526;
-        font-weight: 700;
-      }
-
-      #newChapter {
-        margin-top: auto;
-        padding: 12px;
-        border-radius: 12px;
-        background: #c89b3c;
-        color: #1a1526;
-        border: none;
-        font-weight: 800;
-        cursor: pointer;
-      }
-
-      /* MAIN */
-      #main {
-        flex: 1;
-        padding: 16px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
-
-      #topbar {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-      }
-
-      #titleInput {
-        flex: 1;
-        padding: 10px;
-        border-radius: 12px;
-        border: 1px solid #2a2340;
-        background: #221c33;
-        color: #fff;
-        font-size: 18px;
-      }
-
-      button.primary {
-        background: #c89b3c;
-        color: #1a1526;
-        border: none;
-        border-radius: 12px;
-        padding: 10px 14px;
-        font-weight: 800;
-        cursor: pointer;
-      }
-
-      button.secondary {
-        background: #2a2340;
-        color: #fff;
-        border: none;
-        border-radius: 12px;
-        padding: 10px 14px;
-        cursor: pointer;
-      }
-
-      #meta {
-        display: flex;
-        gap: 14px;
-        font-size: 13px;
-        opacity: 0.85;
-      }
-
-      #toolbar {
-        display: flex;
-        gap: 6px;
-        flex-wrap: wrap;
-      }
-
-      #toolbar button {
-        background: #221c33;
-        border: 1px solid #2a2340;
-        color: #fff;
-        border-radius: 8px;
-        padding: 6px 10px;
-        cursor: pointer;
-      }
-
-      #toolbar button:hover {
-        background: #c89b3c;
-        color: #1a1526;
-      }
-
-      #editor {
-        flex: 1;
-        border: 1px solid #2a2340;
-        border-radius: 16px;
-        background: #221c33;
-        padding: 18px;
-        overflow-y: auto;
-        line-height: 1.8;
-      }
-    </style>
-  </head>
-
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/main.js"></script>
-  </body>
+  <script type="module" src="main.js"></script>
+</body>
 </html>
