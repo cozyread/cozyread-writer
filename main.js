@@ -8,10 +8,43 @@ const supabase = createClient(
   import.meta.env.VITE_SUPABASE_ANON_KEY
 );
 
-/* ================= STORY ================= */
-const storyId = new URLSearchParams(window.location.search).get("story");
+/* ================= PAGE DETECTION ================= */
+const params = new URLSearchParams(window.location.search);
+const storyId = params.get("story");
+const isCreateStoryPage = !!document.getElementById("createStoryForm");
+
+/* ================= CREATE STORY ================= */
+if (isCreateStoryPage) {
+  document
+    .getElementById("createStoryForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const title = document.getElementById("title").value.trim();
+      const description = document.getElementById("description").value.trim();
+
+      const { data, error } = await supabase
+        .from("stories")
+        .insert({ title, description })
+        .select()
+        .single();
+
+      if (error) {
+        alert(error.message);
+        console.error(error);
+        return;
+      }
+
+      window.location.href = `index.html?story=${data.id}`;
+    });
+
+  // STOP here — do not run writer code
+  return;
+}
+
+/* ================= WRITER GUARD ================= */
 if (!storyId) {
-  alert("Open the writer using ?story=STORY_ID");
+  alert("Open the writer with ?story=STORY_ID");
   throw new Error("Missing story id");
 }
 
@@ -27,53 +60,23 @@ const editor = new Editor({
   content: "<p></p>",
 });
 
-/* ================= TOOLBAR (FIXED) ================= */
+/* ================= TOOLBAR ================= */
 document.getElementById("toolbar").addEventListener("click", (e) => {
   const button = e.target.closest("button");
   if (!button) return;
 
   const action = button.dataset.action;
-  if (!action) return;
-
   editor.commands.focus();
 
-  switch (action) {
-    case "bold":
-      editor.commands.toggleBold();
-      break;
-
-    case "italic":
-      editor.commands.toggleItalic();
-      break;
-
-    case "h1":
-      editor.commands.toggleHeading({ level: 1 });
-      break;
-
-    case "h2":
-      editor.commands.toggleHeading({ level: 2 });
-      break;
-
-    case "ul":
-      editor.commands.toggleBulletList();
-      break;
-
-    case "ol":
-      editor.commands.toggleOrderedList();
-      break;
-
-    case "quote":
-      editor.commands.toggleBlockquote();
-      break;
-
-    case "undo":
-      editor.commands.undo();
-      break;
-
-    case "redo":
-      editor.commands.redo();
-      break;
-  }
+  if (action === "bold") editor.commands.toggleBold();
+  if (action === "italic") editor.commands.toggleItalic();
+  if (action === "h1") editor.commands.toggleHeading({ level: 1 });
+  if (action === "h2") editor.commands.toggleHeading({ level: 2 });
+  if (action === "ul") editor.commands.toggleBulletList();
+  if (action === "ol") editor.commands.toggleOrderedList();
+  if (action === "quote") editor.commands.toggleBlockquote();
+  if (action === "undo") editor.commands.undo();
+  if (action === "redo") editor.commands.redo();
 });
 
 /* ================= COUNTERS ================= */
@@ -85,7 +88,7 @@ function updateCounts() {
     text.length + " chars";
 }
 
-/* ================= AUTOSAVE ================= */
+/* ================= SAVE ================= */
 async function saveChapter() {
   if (!currentChapterId) return;
 
@@ -137,9 +140,7 @@ async function loadChapters() {
     list.appendChild(el);
   });
 
-  if (!currentChapterId) {
-    loadChapter(data[0].id);
-  }
+  if (!currentChapterId) loadChapter(data[0].id);
 }
 
 async function loadChapter(id) {
@@ -175,28 +176,17 @@ async function createChapter() {
 
 document.getElementById("newChapter").onclick = createChapter;
 
-/* ================= PUBLISH ================= */
+/* ================= PUBLISH / DELETE ================= */
 document.getElementById("publish").onclick = async () => {
-  if (!currentChapterId) return;
-
   await supabase
     .from("chapters")
     .update({ status: "published" })
     .eq("id", currentChapterId);
-
-  document.getElementById("status").textContent = "Published";
 };
 
-/* ================= DELETE ================= */
 document.getElementById("delete").onclick = async () => {
-  if (!currentChapterId) return;
-  if (!confirm("Delete this chapter?")) return;
-
-  await supabase
-    .from("chapters")
-    .delete()
-    .eq("id", currentChapterId);
-
+  if (!confirm("Delete chapter?")) return;
+  await supabase.from("chapters").delete().eq("id", currentChapterId);
   currentChapterId = null;
   editor.commands.setContent("<p></p>");
   loadChapters();
