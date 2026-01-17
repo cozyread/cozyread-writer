@@ -1,3 +1,8 @@
+const params = new URLSearchParams(window.location.search);
+const MODE = params.get("mode");
+const STORY_ID = params.get("story");
+
+
 import { createClient } from "@supabase/supabase-js";
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
