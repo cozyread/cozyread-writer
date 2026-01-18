@@ -1,0 +1,16 @@
+{
+  "routes": [
+    {
+      "src": "/dashboard.html",
+      "dest": "/dashboard.html"
+    },
+    {
+      "src": "/create-story.html",
+      "dest": "/create-story.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
