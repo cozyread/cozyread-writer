@@ -1,3 +1,9 @@
+const page = new URLSearchParams(window.location.search).get("page");
+
+if (page === "dashboard") {
+  window.location.replace("/dashboard.html");
+}
+
 import { createClient } from "@supabase/supabase-js";
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
