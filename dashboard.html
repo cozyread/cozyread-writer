@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CozyRead Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      margin: 0;
+      background: #1a1526;
+      color: #f4f1ff;
+      font-family: system-ui, sans-serif;
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    h1 {
+      margin: 0;
+      color: #c89b3c;
+    }
+
+    .new-story {
+      background: #c89b3c;
+      color: #1a1526;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .container {
+      padding: 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: #221c33;
+      border-radius: 16px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .card p {
+      font-size: 14px;
+      opacity: 0.85;
+      flex: 1;
+    }
+
+    .card button {
+      background: #c89b3c;
+      color: #1a1526;
+      border: none;
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Your Stories</h1>
+    <button class="new-story" onclick="location.href='create-story.html'">
+      + New Story
+    </button>
+  </header>
+
+  <div class="container" id="storyList"></div>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    /* 🔴 REPLACE WITH YOUR REAL KEYS */
+    const SUPABASE_URL = "https://YOUR_PROJECT_ID.supabase.co";
+    const SUPABASE_ANON_KEY = "YOUR_PUBLIC_ANON_KEY";
+
+    const supabase = supabaseJs.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+    async function loadStories() {
+      const { data, error } = await supabase
+        .from("stories")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error(error);
+        alert(error.message);
+        return;
+      }
+
+      const list = document.getElementById("storyList");
+      list.innerHTML = "";
+
+      if (!data.length) {
+        list.innerHTML = "<p style='opacity:.7'>No stories yet.</p>";
+        return;
+      }
+
+      data.forEach((story) => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        card.innerHTML = `
+          <h2>${story.title}</h2>
+          <p>${story.description || "No description"}</p>
+          <button onclick="openWriter('${story.id}')">
+            Continue Writing
+          </button>
+        `;
+
+        list.appendChild(card);
+      });
+    }
+
+    function openWriter(storyId) {
+      window.location.href = `index.html?story=${storyId}`;
+    }
+
+    loadStories();
+  </script>
+</body>
+</html>
