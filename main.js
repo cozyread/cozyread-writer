@@ -1,3 +1,12 @@
+const params = new URLSearchParams(window.location.search);
+const storyId = params.get("story");
+
+const dashboard = document.getElementById("dashboard");
+
+if (!storyId && dashboard) {
+  dashboard.style.display = "block";
+}
+
 import { createClient } from "@supabase/supabase-js";
 
 /* ================= SUPABASE ================= */
