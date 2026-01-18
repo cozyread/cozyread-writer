@@ -1,18 +1,21 @@
 import { createClient } from "@supabase/supabase-js";
 
+/* ================= SUPABASE ================= */
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
   import.meta.env.VITE_SUPABASE_ANON_KEY
 );
 
-/* ================= ROUTER ================= */
-const params = new URLSearchParams(window.location.search);
-const page = params.get("page");
-const storyId = params.get("story");
-
+/* ================= ELEMENTS ================= */
 const dashboard = document.getElementById("dashboard");
 const create = document.getElementById("create");
 const writer = document.getElementById("writer");
+const storyList = document.getElementById("storyList");
+
+/* ================= ROUTER ================= */
+const params = new URLSearchParams(window.location.search);
+const storyId = params.get("story");
+const page = params.get("page");
 
 function hideAll() {
   dashboard.classList.add("hidden");
@@ -22,46 +25,60 @@ function hideAll() {
 
 hideAll();
 
-if (storyId) {
-  writer.classList.remove("hidden");
-  // 🔥 your existing writer code runs here
-} else if (page === "create") {
-  create.classList.remove("hidden");
-} else {
+/* 🔥 DEFAULT = DASHBOARD */
+if (!storyId && !page) {
   dashboard.classList.remove("hidden");
+  loadStories();
+}
+else if (page === "create") {
+  create.classList.remove("hidden");
+}
+else if (storyId) {
+  writer.classList.remove("hidden");
 }
 
 /* ================= DASHBOARD ================= */
 async function loadStories() {
-  const { data } = await supabase
+  storyList.innerHTML = "Loading…";
+
+  const { data, error } = await supabase
     .from("stories")
     .select("*")
     .order("created_at", { ascending: false });
 
-  const list = document.getElementById("storyList");
-  list.innerHTML = "";
+  if (error) {
+    console.error(error);
+    storyList.innerHTML = "Error loading stories";
+    return;
+  }
 
-  data.forEach((s) => {
+  if (!data.length) {
+    storyList.innerHTML = "<p>No stories yet.</p>";
+    return;
+  }
+
+  storyList.innerHTML = "";
+
+  data.forEach((story) => {
     const div = document.createElement("div");
+    div.className = "card";
     div.innerHTML = `
-      <h3>${s.title}</h3>
-      <button onclick="openWriter('${s.id}')">Continue</button>
+      <h3>${story.title}</h3>
+      <p>${story.description || ""}</p>
+      <button onclick="openWriter('${story.id}')">Continue Writing</button>
     `;
-    list.appendChild(div);
+    storyList.appendChild(div);
   });
 }
+
+/* ================= NAV ================= */
+window.goCreate = () => {
+  window.location.href = "index.html?page=create";
+};
 
 window.openWriter = (id) => {
   window.location.href = `index.html?story=${id}`;
 };
-
-window.goCreate = () => {
-  window.location.href = `index.html?page=create`;
-};
-
-if (!storyId && page !== "create") {
-  loadStories();
-}
 
 /* ================= CREATE STORY ================= */
 window.createStory = async () => {
@@ -73,11 +90,17 @@ window.createStory = async () => {
     return;
   }
 
-  const { data: story } = await supabase
+  const { data: story, error } = await supabase
     .from("stories")
     .insert({ title, description })
     .select()
     .single();
+
+  if (error) {
+    alert(error.message);
+    console.error(error);
+    return;
+  }
 
   await supabase.from("chapters").insert({
     story_id: story.id,
