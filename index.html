@@ -30,32 +30,49 @@
       border: none;
       border-radius: 8px;
       padding: 10px;
+      width: 100%;
     }
 
-    .hidden { display: none; }
+    .hidden {
+      display: none;
+    }
+
+    .container {
+      padding: 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: #221c33;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
   </style>
 </head>
 
 <body>
   <!-- DASHBOARD -->
-  <div id="dashboard" class="hidden">
+  <div id="dashboard" class="container">
     <h1 style="color:#c89b3c">Your Stories</h1>
     <button onclick="goCreate()">+ New Story</button>
-    <div id="storyList"></div>
+    <div id="storyList" style="margin-top:16px"></div>
   </div>
 
   <!-- CREATE STORY -->
-  <div id="create" class="hidden">
+  <div id="create" class="container hidden">
     <h1 style="color:#c89b3c">Create Story</h1>
     <input id="newTitle" placeholder="Story title" />
-    <textarea id="newDesc" placeholder="Description"></textarea>
-    <button onclick="createStory()">Create & Write</button>
+    <textarea id="newDesc" placeholder="Description" style="margin-top:8px"></textarea>
+    <button style="margin-top:12px" onclick="createStory()">Create & Write</button>
   </div>
 
   <!-- WRITER -->
-  <div id="writer" class="hidden">
-    <h1>Writer (already working)</h1>
-    <p>Writer code stays EXACTLY as you already have it.</p>
+  <div id="writer" class="container hidden">
+    <h1>Writer</h1>
+    <p>Your existing writer UI stays here (already working).</p>
+    <p><b>URL:</b> ?story=UUID</p>
   </div>
 
   <script type="module" src="main.js"></script>
