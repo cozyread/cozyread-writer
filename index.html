@@ -8,35 +8,33 @@
   <style>
     body {
       margin: 0;
+      font-family: system-ui, sans-serif;
       background: #1a1526;
       color: #f4f1ff;
-      font-family: system-ui, sans-serif;
-      min-height: 100vh;
     }
-
-    .hidden {
-      display: none;
-    }
-
+    .hidden { display: none; }
+    .container { padding: 24px; max-width: 900px; margin: auto; }
     button {
       background: #c89b3c;
       color: #1a1526;
       border: none;
-      border-radius: 10px;
-      padding: 10px 14px;
+      border-radius: 8px;
+      padding: 8px 12px;
       font-weight: 700;
       cursor: pointer;
     }
-
-    .container {
-      padding: 24px;
-      max-width: 900px;
-      margin: 0 auto;
+    input, textarea {
+      width: 100%;
+      background: #221c33;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 8px;
     }
-
     .card {
       background: #221c33;
-      border-radius: 14px;
+      border-radius: 12px;
       padding: 16px;
       margin-bottom: 12px;
     }
@@ -44,19 +42,30 @@
 </head>
 
 <body>
-  <!-- DASHBOARD -->
-  <div id="dashboard" class="container hidden">
-    <h1 style="color:#c89b3c">Your Stories</h1>
-    <button id="newStoryBtn">+ New Story</button>
-    <div id="storyList" style="margin-top:16px"></div>
-  </div>
 
-  <!-- WRITER -->
-  <div id="writer" class="hidden">
-    <!-- 🔴 YOUR EXISTING WRITER HTML GOES HERE -->
-    <!-- DO NOT CHANGE IT -->
-  </div>
+<!-- DASHBOARD -->
+<div id="dashboard" class="container">
+  <h1>Your Stories</h1>
+  <button onclick="goCreate()">+ New Story</button>
+  <div id="storyList"></div>
+</div>
 
-  <script type="module" src="main.js"></script>
+<!-- CREATE STORY -->
+<div id="create" class="container hidden">
+  <h1>Create Story</h1>
+  <input id="newTitle" placeholder="Story title" />
+  <textarea id="newDesc" placeholder="Description"></textarea>
+  <button onclick="createStory()">Create & Write</button>
+</div>
+
+<!-- WRITER -->
+<div id="writer" class="container hidden">
+  <input id="chapterTitle" placeholder="Chapter title" />
+  <textarea id="editor" style="height:300px"></textarea>
+  <button onclick="publish()">Publish</button>
+  <button onclick="deleteChapter()">Delete</button>
+</div>
+
+<script type="module" src="main.js"></script>
 </body>
 </html>
